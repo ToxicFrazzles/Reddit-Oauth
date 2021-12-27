@@ -16,6 +16,7 @@ class RedditApp:
         self.port = port
         self.scopes = scopes
         self.refresh_token = refresh_token
+        self.access_token = None
 
     def authorisation_url(self, state):
         return (f"{AUTHORISE_URL}"
@@ -44,9 +45,9 @@ class RedditApp:
             if "error" in json:
                 print(json)
                 exit(1)
-            access_token = json["access_token"]
+            self.access_token = json["access_token"]
             self.refresh_token = json["refresh_token"]
-            return access_token
+            return self.access_token
 
     def auth(self):
         if self.refresh_token is not None:
@@ -69,5 +70,13 @@ class RedditApp:
             if "error" in json:
                 print(json)
                 exit(1)
-            access_token = json["access_token"]
-            return access_token
+            self.access_token = json["access_token"]
+            return self.access_token
+
+    def get_username(self):
+        headers = {
+            "User-agent": "Username grabber by u/toxicfrazzles",
+            "Authorization": f"bearer {self.access_token}"
+        }
+        with requests.get("https://oauth.reddit.com/api/v1/me", headers=headers) as r:
+            return r.json()["name"]
