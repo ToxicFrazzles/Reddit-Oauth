@@ -1,4 +1,4 @@
-from reddit_oauth.reddit import RedditApp
+from reddit_oauth import RedditApp
 import json
 import requests
 from pathlib import Path
